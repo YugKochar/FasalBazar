@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sell Crops - Fasal Bazaar</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* ── Mic button ─────────────────────────────────── */
+      .mic-btn {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border: 1.5px solid #ccc;
+        border-radius: 8px;
+        background: #f9fafb;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, border-color 0.2s;
+        padding: 0;
+        line-height: 1;
+      }
+      .mic-btn:hover { background: #e8f5e9; border-color: #2e7d32; }
+
+      /* Input + mic side-by-side */
+      .input-with-mic {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start; /* align-items:start so textarea mic stays at top */
+      }
+      .input-with-mic input,
+      .input-with-mic textarea {
+        flex: 1;
+        min-width: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content" style="justify-content: space-between">
+          <a
+            href="index.html"
+            class="logo"
+            style="text-decoration: none; color: inherit"
+            >Fasal Bazaar</a
+          >
+          <nav
+            class="main-nav"
+            style="background: transparent; padding: 0; box-shadow: none"
+          >
+            <div class="nav-container" style="gap: 50px">
+              <a
+                href="index.html"
+                style="color: #333; text-decoration: none; font-weight: 600"
+                >Home</a
+              >
+              <a
+                href="buying.html"
+                style="color: #333; text-decoration: none; font-weight: 600"
+                >Buy Crops</a
+              >
+              <a
+                href="selling.html"
+                style="color: #1a5490; text-decoration: none; font-weight: 600"
+                >Sell Crops</a
+              >
+            </div>
+          </nav>
+          <div id="userSection"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container form-container">
+      <div class="progress-tabs">
+        <div class="tab active" data-t>List Your Crop</div>
+      </div>
+
+      <form id="sellingForm" class="checkout-form">
+        <div class="form-grid">
+          <div class="form-left">
+            <h3 data-t>Seller Details</h3>
+
+            <div class="form-group">
+              <label for="firstName" data-t>First Name*</label>
+              <input type="text" id="firstName" required />
+            </div>
+
+            <div class="form-group">
+              <label for="lastName" data-t>Last Name*</label>
+              <input type="text" id="lastName" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email" data-t>Email Address*</label>
+              <input type="email" id="email" required />
+            </div>
+
+            <div class="form-group">
+              <label for="phone" data-t>Phone Number*</label>
+              <input type="tel" id="phone" required />
+            </div>
+
+            <div class="form-group">
+              <label for="street" data-t>Street Address*</label>
+              <input type="text" id="street" required />
+            </div>
+
+            <div class="form-group">
+              <label for="postcode" data-t>Pincode* (Enter to auto-fill)</label>
+              <input
+                type="text"
+                id="postcode"
+                maxlength="6"
+                placeholder="Enter 6-digit pincode"
+                required
+              />
+              <small
+                id="locationMsg"
+                style="display: block; margin-top: 5px; font-size: 12px"
+              ></small>
+            </div>
+
+            <div class="form-group">
+              <label for="city" data-t>Town / City*</label>
+              <input type="text" id="city" required />
+            </div>
+
+            <div class="form-group">
+              <label for="state" data-t>State*</label>
+              <input type="text" id="state" required />
+            </div>
+
+            <div class="form-group">
+              <label for="country" data-t>Country*</label>
+              <input type="text" id="country" value="India" required />
+            </div>
+          </div>
+
+          <div class="form-right">
+            <h3 data-t>Crop Details</h3>
+
+            <!-- Crop Name + mic -->
+            <div class="form-group">
+              <label for="cropName" data-t>Crop Name*</label>
+              <div class="input-with-mic">
+                <input
+                  type="text"
+                  id="cropName"
+                  placeholder="e.g. Sharbati Wheat"
+                  required
+                />
+                <button
+                  type="button"
+                  id="micCropName"
+                  class="mic-btn"
+                  title="Speak crop name"
+                >🎙️</button>
+              </div>
+            </div>
+
+            <!-- Mandi Price Widget -->
+            <div
+              id="mandiWidget"
+              style="
+                display: none;
+                background: #f0fdf4;
+                border: 1px solid #86efac;
+                border-radius: 10px;
+                padding: 16px;
+                margin-bottom: 16px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 10px;
+                "
+              >
+                <span style="font-size: 13px; font-weight: 700; color: #166534"
+                  ><i class="fas fa-chart-line"></i> <span data-t>Live Mandi Price</span></span
+                >
+                <a
+                  href="mandi.html"
+                  target="_blank"
+                  style="
+                    font-size: 11px;
+                    color: #1a5490;
+                    font-weight: 600;
+                    text-decoration: none;
+                  "
+                  data-t>View all →</a
+                >
+              </div>
+              <div id="mandiWidgetBody">
+                <div style="font-size: 13px; color: #6b7280" data-t>
+                  Fetching current mandi price...
+                </div>
+              </div>
+            </div>
+
+            <!-- Quantity + mic -->
+            <div class="form-group">
+              <label for="amountSelling" data-t>Quantity Available (with unit)*</label>
+              <div class="input-with-mic">
+                <input
+                  type="text"
+                  id="amountSelling"
+                  placeholder="e.g., 100 Kg"
+                  required
+                />
+                <button
+                  type="button"
+                  id="micAmount"
+                  class="mic-btn"
+                  title="Speak quantity"
+                >🎙️</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="cost" data-t>Price (per unit)*</label>
+              <input
+                type="text"
+                id="cost"
+                placeholder="e.g., ₹25/kg"
+                required
+              />
+            </div>
+
+            <!-- Description + mic -->
+            <div class="form-group">
+              <label for="productDescription" data-t>Product Description*</label>
+              <div class="input-with-mic">
+                <textarea
+                  id="productDescription"
+                  rows="4"
+                  placeholder="Describe the quality, harvest date, and condition of your crop..."
+                  required
+                ></textarea>
+                <button
+                  type="button"
+                  id="micDescription"
+                  class="mic-btn"
+                  title="Speak description"
+                  style="margin-top: 2px;"
+                >🎙️</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="productFeatures" data-t
+                >Key Highlights (Separate by comma)</label
+              >
+              <textarea
+                id="productFeatures"
+                rows="2"
+                placeholder="e.g. Organic, Fresh Harvest, High Protein"
+              ></textarea>
+            </div>
+
+            <!-- Delivery cost + mic -->
+            <div class="form-group">
+              <label for="deliveryCost" data-t>Delivery / Logistics Cost*</label>
+              <div class="input-with-mic">
+                <input
+                  type="text"
+                  id="deliveryCost"
+                  placeholder="e.g., Free or ₹500 flat rate"
+                  required
+                />
+                <button
+                  type="button"
+                  id="micDelivery"
+                  class="mic-btn"
+                  title="Speak delivery cost"
+                >🎙️</button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 5px">
+              <label data-t>Crop Photos (Min 1)*</label>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px">
+              <button
+                type="button"
+                class="upload-btn"
+                style="flex: 1; margin: 0"
+                onclick="document.getElementById('galleryInput').click()"
+              >
+                <i class="fas fa-images"></i> <span data-t>Gallery</span>
+              </button>
+
+              <button
+                type="button"
+                class="upload-btn"
+                style="
+                  flex: 1;
+                  margin: 0;
+                  border-style: solid;
+                  background-color: #f0f5ff;
+                  border-color: #1a5490;
+                  color: #1a5490;
+                "
+                onclick="document.getElementById('cameraInput').click()"
+              >
+                <i class="fas fa-camera"></i> <span data-t>Take Photo</span>
+              </button>
+            </div>
+
+            <input
+              type="file"
+              id="galleryInput"
+              accept="image/*"
+              multiple
+              style="display: none"
+              onchange="handleFileUpload(this)"
+            />
+            <input
+              type="file"
+              id="cameraInput"
+              accept="image/*"
+              capture="environment"
+              style="display: none"
+              onchange="handleFileUpload(this)"
+            />
+
+            <div id="photoPreviewGrid" class="photo-grid"></div>
+
+            <button type="submit" class="submit-btn" style="margin-top: 20px" data-t>
+              List Crop for Sale
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <footer>
+      <div class="footer-bottom">
+        <div class="container">
+          <p>&copy; 2025 Fasal Bazaar Ltd.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="reverie.js"></script>
+    <script src="site-translate.js"></script>
+    <script src="selling-script.js"></script>
+    <script>
+      // ── Mandi Price Widget ────────────────────────────────────
+      // Use a relative path so it works in all environments (not just localhost)
+      const MANDI_API = "/api/mandi/prices";
+      let mandiDebounce = null;
+
+      document.getElementById("cropName").addEventListener("input", (e) => {
+        clearTimeout(mandiDebounce);
+        const crop = e.target.value.trim();
+        if (crop.length < 3) {
+          document.getElementById("mandiWidget").style.display = "none";
+          return;
+        }
+        mandiDebounce = setTimeout(() => fetchMandiWidget(crop), 700);
+      });
+
+      async function fetchMandiWidget(crop) {
+        const widget = document.getElementById("mandiWidget");
+        const body = document.getElementById("mandiWidgetBody");
+        widget.style.display = "block";
+        body.innerHTML =
+          '<div style="font-size:13px;color:#6b7280;"><i class="fas fa-spinner fa-spin"></i> Fetching...</div>';
+
+        try {
+          const res = await fetch(
+            `${MANDI_API}?crop=${encodeURIComponent(crop)}&limit=10`,
+          );
+          const data = await res.json();
+          if (!res.ok) {
+            body.innerHTML =
+              '<p style="font-size:13px;color:#dc2626;">' +
+              (data.error || "Could not fetch.") +
+              "</p>";
+            return;
+          }
+          const records = data.records || [];
+
+          if (records.length === 0) {
+            body.innerHTML = `<p style="font-size:13px;color:#6b7280;">No mandi data found for "${crop}".</p>`;
+            return;
+          }
+
+          const prices = records
+            .map((r) => ({
+              market: r.market || r.Market || "",
+              state: r.state || r.State || "",
+              modal: parseFloat(r.modal_price || r.Modal_x0020_Price || 0),
+              min: parseFloat(r.min_price || r.Min_x0020_Price || 0),
+              max: parseFloat(r.max_price || r.Max_x0020_Price || 0),
+            }))
+            .filter((r) => r.modal > 0);
+
+          if (prices.length === 0) {
+            body.innerHTML =
+              '<p style="font-size:13px;color:#6b7280;">Price data unavailable.</p>';
+            return;
+          }
+
+          const avgModal = Math.round(
+            prices.reduce((s, r) => s + r.modal, 0) / prices.length,
+          );
+          const minPrice = Math.min(...prices.map((r) => r.min));
+          const maxPrice = Math.max(...prices.map((r) => r.max));
+          const best = prices.reduce((a, b) => (a.modal > b.modal ? a : b));
+
+          body.innerHTML = `
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;">
+            <div style="text-align:center;background:white;border-radius:8px;padding:10px;">
+              <div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;">Avg Modal</div>
+              <div style="font-size:18px;font-weight:800;color:#166534;">₹${avgModal}<span style="font-size:11px;font-weight:400;">/q</span></div>
+            </div>
+            <div style="text-align:center;background:white;border-radius:8px;padding:10px;">
+              <div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;">Range</div>
+              <div style="font-size:14px;font-weight:700;color:#333;">₹${minPrice}–${maxPrice}</div>
+            </div>
+            <div style="text-align:center;background:white;border-radius:8px;padding:10px;">
+              <div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;">Mandis</div>
+              <div style="font-size:18px;font-weight:800;color:#1a5490;">${prices.length}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#166534;font-weight:600;">
+            🏆 Best price: <strong>${best.market}, ${best.state}</strong> at ₹${best.modal}/q
+          </div>
+          <div style="font-size:11px;color:#6b7280;margin-top:6px;">
+            💡 Tip: ₹1/quintal = ₹0.01/kg — divide by 100 to compare with your per-kg price.
+          </div>`;
+        } catch (err) {
+          body.innerHTML =
+            '<p style="font-size:13px;color:#dc2626;">Could not fetch mandi data.</p>';
+        }
+      }
+    </script>
+  </body>
+</html>
