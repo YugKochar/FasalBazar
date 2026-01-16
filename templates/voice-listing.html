@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Listing — Fasal Bazaar</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f8e9;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 480px; width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    h1 { color: #2e7d32; font-size: 1.5rem; margin-bottom: 6px; text-align: center; }
+    .subtitle { color: #666; text-align: center; font-size: .9rem; margin-bottom: 24px; }
+
+    .chat-area {
+      min-height: 300px; max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0; border-radius: 12px;
+      padding: 16px; margin-bottom: 20px;
+      background: #fafafa;
+    }
+    .msg { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+    .msg.bot .bubble {
+      background: #e8f5e9; color: #1b5e20;
+      border-radius: 0 14px 14px 14px;
+    }
+    .msg.user .bubble {
+      background: #1976d2; color: white;
+      border-radius: 14px 14px 0 14px;
+      margin-left: auto;
+    }
+    .msg.user { flex-direction: row-reverse; }
+    .bubble { padding: 10px 14px; font-size: .95rem; max-width: 85%; line-height: 1.5; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; background: #c8e6c9; flex-shrink: 0;
+    }
+
+    .mic-btn {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: none; cursor: pointer;
+      background: #2e7d32; color: white;
+      font-size: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(46,125,50,0.4);
+    }
+    .mic-btn.recording {
+      background: #c62828;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(198,40,40,0.4); }
+      70%  { box-shadow: 0 0 0 16px rgba(198,40,40,0);   }
+      100% { box-shadow: 0 0 0 0   rgba(198,40,40,0);   }
+    }
+    .mic-label { text-align: center; color: #555; font-size: .9rem; margin-bottom: 16px; }
+
+    .status {
+      text-align: center; font-size: .85rem;
+      color: #888; min-height: 20px; margin-bottom: 12px;
+    }
+    .status.listening { color: #c62828; font-weight: 600; }
+    .status.thinking  { color: #1565c0; }
+
+    .lang-row {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 20px;
+    }
+    .lang-chip {
+      padding: 6px 14px; border-radius: 20px; cursor: pointer;
+      border: 2px solid #c8e6c9; background: white;
+      font-size: .85rem; transition: all .2s;
+    }
+    .lang-chip.active { background: #2e7d32; color: white; border-color: #2e7d32; }
+
+    .confirm-box {
+      background: #f1f8e9; border-radius: 12px; padding: 16px;
+      margin-top: 16px; display: none;
+    }
+    .confirm-box h3 { color: #2e7d32; margin-bottom: 10px; }
+    .confirm-box .field {
+      display: flex; justify-content: space-between;
+      padding: 5px 0; border-bottom: 1px solid #e0e0e0; font-size: .9rem;
+    }
+    .confirm-box .field:last-child { border: none; }
+    .confirm-box .field label { color: #666; }
+    .confirm-box .field span  { font-weight: 600; color: #222; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+    .btn {
+      flex: 1; padding: 12px; border: none; border-radius: 10px;
+      cursor: pointer; font-size: 1rem; font-weight: 600; transition: all .2s;
+    }
+    .btn-confirm { background: #2e7d32; color: white; }
+    .btn-redo    { background: #fff; color: #c62828; border: 2px solid #c62828; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎙️ Voice Listing</h1>
+    <p class="subtitle" id="subtitle">बोलकर अपनी फसल बेचें — बस माइक दबाएं और बोलें</p>
+
+    <!-- Language selector -->
+    <div class="lang-row" id="langRow">
+      <div class="lang-chip active" data-code="hi">हिंदी</div>
+      <div class="lang-chip" data-code="mr">मराठी</div>
+      <div class="lang-chip" data-code="pa">ਪੰਜਾਬੀ</div>
+      <div class="lang-chip" data-code="gu">ગુજરાતી</div>
+      <div class="lang-chip" data-code="en">English</div>
+    </div>
+
+    <!-- Chat messages -->
+    <div class="chat-area" id="chatArea"></div>
+
+    <!-- Mic controls -->
+    <div class="status" id="status">माइक दबाएं और बोलना शुरू करें</div>
+    <button class="mic-btn" id="micBtn">🎙️</button>
+    <div class="mic-label" id="micLabel">Tap to Speak / दबाकर बोलें</div>
+
+    <!-- Confirmation box (shown when Claude has all fields) -->
+    <div class="confirm-box" id="confirmBox">
+      <h3>📋 लिस्टिंग का विवरण</h3>
+      <div id="confirmFields"></div>
+      <div class="btn-row">
+        <button class="btn btn-confirm" id="btnSubmit">✅ Submit</button>
+        <button class="btn btn-redo"    id="btnRedo">🔄 फिर से बोलें</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="reverie.js"></script>
+  <script src="voice-listing.js"></script>
+</body>
+</html>
