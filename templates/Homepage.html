@@ -4,7 +4,7 @@
     <script>
       // Redirect to language selector if this is their first visit
       if (!localStorage.getItem("fb_lang")) {
-        window.location.replace("language-select.html");
+        localStorage.setItem("fb_lang", "en");
       }
     </script>
     <meta charset="UTF-8" />
