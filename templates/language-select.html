@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fasal Bazaar — Choose Your Language · भाषा चुनें</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Literata:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green-deep: #0f2006;
+      --green-dark: #2d5016;
+      --green: #5a8c2e;
+      --green-light: #7ab340;
+      --green-pale: #e8f5d8;
+      --gold: #c8971a;
+      --gold-light: #f0c040;
+      --text: #f0ede4;
+      --text-muted: rgba(240,237,228,.52);
+      --card-bg: rgba(255,255,255,.055);
+      --card-border: rgba(255,255,255,.10);
+      --shadow-glow: 0 0 50px rgba(90,140,46,.22);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      font-family: 'Literata', Georgia, serif;
+      background: var(--green-deep);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background */
+    .bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 50% -5%, rgba(90,140,46,.20) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 35% at 5% 95%,  rgba(45,80,22,.30)  0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 95% 85%, rgba(26,84,144,.14) 0%, transparent 55%);
+    }
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+    .orb { position: absolute; border-radius: 50%; filter: blur(72px); opacity: .15; animation: orb-drift ease-in-out infinite alternate; }
+    .o1 { width:380px;height:380px;background:#5a8c2e;top:-120px;left:5%;animation-duration:14s; }
+    .o2 { width:220px;height:220px;background:#c8971a;top:55%;right:5%;animation-duration:18s;animation-delay:-7s; }
+    .o3 { width:300px;height:300px;background:#1a5490;bottom:-60px;left:55%;animation-duration:20s;animation-delay:-4s; }
+    @keyframes orb-drift { from{transform:translate(0,0) scale(1)} to{transform:translate(20px,-30px) scale(1.08)} }
+
+    /* Layout */
+    .wrap {
+      position: relative; z-index: 1;
+      width: min(540px, 100%);
+      display: flex; flex-direction: column; align-items: center;
+      animation: rise .65s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes rise { from{opacity:0;transform:translateY(28px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+    /* Brand */
+    .brand { text-align: center; margin-bottom: 28px; }
+    .brand-icon {
+      font-size: 56px; display: block; margin-bottom: 10px;
+      filter: drop-shadow(0 0 22px rgba(90,140,46,.65));
+      animation: icon-float 3.5s ease-in-out infinite;
+    }
+    @keyframes icon-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .brand-name {
+      font-family: 'Tiro Devanagari Hindi', serif;
+      font-size: 42px; font-weight: 400; color: var(--gold-light);
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 30px rgba(200,151,26,.5), 0 2px 4px rgba(0,0,0,.4);
+      line-height: 1.15;
+    }
+    .brand-tagline { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-style: italic; letter-spacing: .6px; }
+
+    /* Divider */
+    .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; width: 100%; }
+    .divider-line { flex: 1; height: 1px; background: var(--card-border); }
+    .divider-text { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; letter-spacing: .4px; }
+
+    /* Revisit notice */
+    .revisit-notice {
+      display: none;
+      background: rgba(90,140,46,.18);
+      border: 1px solid rgba(122,179,64,.35);
+      border-radius: 12px;
+      padding: 11px 14px;
+      margin-bottom: 16px;
+      font-size: 13px; color: var(--green-pale); text-align: center;
+      width: 100%;
+      animation: rise .4s ease both;
+    }
+    .revisit-notice strong { color: var(--gold-light); }
+
+    /* Language grid */
+    .lang-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 9px; width: 100%; }
+
+    .lang-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 13px;
+      padding: 13px 6px 11px;
+      cursor: pointer; text-align: center;
+      transition: background .22s, border-color .22s, transform .2s, box-shadow .22s;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      position: relative; overflow: hidden;
+      animation: card-in .5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .lang-card:nth-child(1){animation-delay:.04s} .lang-card:nth-child(2){animation-delay:.07s}
+    .lang-card:nth-child(3){animation-delay:.10s} .lang-card:nth-child(4){animation-delay:.13s}
+    .lang-card:nth-child(5){animation-delay:.16s} .lang-card:nth-child(6){animation-delay:.19s}
+    .lang-card:nth-child(7){animation-delay:.22s} .lang-card:nth-child(8){animation-delay:.25s}
+    .lang-card:nth-child(9){animation-delay:.28s} .lang-card:nth-child(10){animation-delay:.31s}
+    .lang-card:nth-child(11){animation-delay:.34s} .lang-card:nth-child(12){animation-delay:.37s}
+    .lang-card:nth-child(13){animation-delay:.40s} .lang-card:nth-child(14){animation-delay:.43s}
+    .lang-card:nth-child(15){animation-delay:.46s} .lang-card:nth-child(16){animation-delay:.49s}
+    @keyframes card-in { from{opacity:0;transform:translateY(12px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+    .lang-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(122,179,64,.15) 0%,transparent 65%); opacity:0; transition:opacity .22s; }
+    .lang-card:hover::before, .lang-card.selected::before { opacity: 1; }
+    .lang-card:hover { border-color: rgba(122,179,64,.45); transform: translateY(-4px) scale(1.03); box-shadow: 0 10px 28px rgba(0,0,0,.4), 0 0 0 1px rgba(122,179,64,.25); }
+    .lang-card.selected { border-color: var(--green-light); background: rgba(90,140,46,.22); box-shadow: 0 0 0 2px var(--green-light), 0 8px 28px rgba(0,0,0,.35); transform: translateY(-2px); }
+    .lang-card.selected .lc-native { color: var(--gold-light); }
+    .lang-card.selected::after { content:'✓'; position:absolute; top:5px; right:7px; font-size:10px; color:var(--green-light); font-weight:700; }
+
+    .lc-native { display:block; font-size:17px; font-weight:700; color:var(--text); line-height:1.25; margin-bottom:3px; transition:color .2s; }
+    .lc-en { display:block; font-size:10px; color:var(--text-muted); letter-spacing:.15px; }
+
+    /* CTA */
+    .cta-wrap {
+      width: 100%; margin-top: 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 11px;
+      animation: rise .65s .3s cubic-bezier(.22,1,.36,1) both;
+    }
+    .btn-enter {
+      width: 100%; padding: 15px; border: none; border-radius: 50px;
+      background: linear-gradient(135deg, #7ab340 0%, #2d5016 100%);
+      color: #fff; font-family: 'Literata', Georgia, serif;
+      font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: .5px;
+      box-shadow: 0 6px 32px rgba(45,80,22,.55), var(--shadow-glow);
+      transition: transform .2s, box-shadow .2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      position: relative; overflow: hidden;
+    }
+    .btn-enter::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.14) 0%,transparent 55%); }
+    .btn-enter:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(45,80,22,.65), var(--shadow-glow); }
+    .btn-enter:disabled { opacity: .38; cursor: not-allowed; }
+    .btn-spinner { width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;display:none;flex-shrink:0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn-skip { background:none;border:none;color:var(--text-muted);font-size:12.5px;cursor:pointer;font-family:'Literata',Georgia,serif;letter-spacing:.3px;transition:color .2s;padding:4px 8px; }
+    .btn-skip:hover { color:var(--text);text-decoration:underline; }
+
+    /* Exit animation */
+    body.exiting .wrap { animation: exit-out .44s cubic-bezier(.4,0,1,1) forwards; }
+    @keyframes exit-out { to { opacity:0; transform:translateY(-20px) scale(.96); } }
+    body.exiting .bg { transition: opacity .44s; opacity: 0; }
+
+    /* Responsive */
+    @media(max-width:460px) { .lang-grid { grid-template-columns: repeat(3,1fr); } .brand-name { font-size: 30px; } }
+    @media(max-width:330px) { .lang-grid { grid-template-columns: repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+  <div class="bg">
+    <div class="bg-grid"></div>
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="orb o3"></div>
+  </div>
+
+  <main class="wrap">
+    <div class="brand">
+      <span class="brand-icon">🌾</span>
+      <div class="brand-name">Fasal Bazaar</div>
+      <div class="brand-tagline">Kisan se seedha khareedaar tak · किसान से सीधा खरीदार तक</div>
+    </div>
+
+    <div class="revisit-notice" id="revisit-notice">
+      You last used Fasal Bazaar in <strong id="revisit-lang-name"></strong>.
+      Continue below or pick a new language.
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">अपनी भाषा चुनें &middot; Choose your language</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="lang-grid" id="lang-grid" role="listbox" aria-label="Language selection"></div>
+
+    <div class="cta-wrap">
+      <button class="btn-enter" id="btn-enter" disabled>
+        <span id="btn-text">Select a language above</span>
+        <div class="btn-spinner" id="btn-spinner"></div>
+      </button>
+      <button class="btn-skip" id="btn-skip">Continue in English without selecting</button>
+    </div>
+  </main>
+
+  <script src="reverie.js"></script>
+  <script src="api.js"></script>
+  <script src="site-translate.js"></script>
+  <script>
+  (() => {
+    const LANGS = Reverie.SUPPORTED_LANGUAGES;
+
+    // Pre-written CTA labels — avoid making a translate API call on this screen
+    const CTA = {
+      en:  "Enter Fasal Bazaar \u2192",
+      hi:  "\u092B\u0938\u0932 \u092C\u093E\u091C\u093C\u093E\u0930 \u092E\u0947\u0902 \u091C\u093E\u090F\u0902 \u2192",
+      ta:  "\u0B89\u0BB3\u0BCD\u0BB3\u0BC7 \u0B9A\u0BC6\u0BB2\u0BCD\u0BB2\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u2192",
+      te:  "\u0C32\u0C4B\u0C2A\u0C32\u0C3F\u0C15\u0C3F \u0C35\u0C46\u0C33\u0C4D\u0C33\u0C02\u0C21\u0C3F \u2192",
+      kn:  "\u0C92\u0CB3\u0C97\u0CC6 \u0CB9\u0CCB\u0C97\u0CBF \u2192",
+      ml:  "\u0D05\u0D15\u0D24\u0D4D\u0D24\u0D4D \u0D15\u0D1F\u0D15\u0D4D\u0D15\u0D42 \u2192",
+      bn:  "\u09AD\u09C7\u09A4\u09B0\u09C7 \u09AF\u09BE\u09A8 \u2192",
+      gu:  "\u0A85\u0AA8\u0ACD\u0AA6\u0AB0 \u0A9C\u0ABE\u0A93 \u2192",
+      mr:  "\u0906\u0924 \u091C\u093E \u2192",
+      pa:  "\u0A05\u0A70\u0A26\u0A30 \u0A1C\u0A3E\u0A13 \u2192",
+      or:  "\u0B2D\u0B3F\u0B24\u0B30\u0B15\u0B41 \u0B2F\u0B3E\u0B06 \u2192",
+      as:  "\u09AD\u09BF\u09A4\u09B0\u09A4 \u09B8\u09CB\u09AE\u09BE\u0993\u0995 \u2192",
+      ne:  "\u092D\u093F\u0924\u094D\u0930 \u091C\u093E\u0928\u0941\u0939\u094B\u0938\u094D \u2192",
+      ur:  "\u0627\u0646\u062F\u0631 \u062C\u0627\u0626\u06CC\u06BA \u2192",
+      kok: "\u0906\u0902\u0924 \u0935\u091A\u093E\u0924 \u2192",
+      mai: "\u092D\u093F\u0924\u0930 \u091C\u093E\u0909 \u2192",
+    };
+
+    let selected = null;
+    const saved  = localStorage.getItem("fb_lang");
+
+    // Show revisit notice
+    if (saved && LANGS[saved]) {
+      const notice = document.getElementById("revisit-notice");
+      document.getElementById("revisit-lang-name").textContent =
+        LANGS[saved].nativeName + " (" + LANGS[saved].label + ")";
+      notice.style.display = "block";
+    }
+
+    // Build grid
+    const grid = document.getElementById("lang-grid");
+    Object.entries(LANGS).forEach(([code, info]) => {
+      const card = document.createElement("button");
+      card.className = "lang-card" + (code === saved ? " selected" : "");
+      card.setAttribute("role", "option");
+      card.setAttribute("aria-selected", code === saved ? "true" : "false");
+      card.setAttribute("data-code", code);
+      card.setAttribute("lang", code);
+      card.innerHTML =
+        '<span class="lc-native">' + info.nativeName + '</span>' +
+        '<span class="lc-en">'     + info.label      + '</span>';
+      card.addEventListener("click", () => pick(code));
+      grid.appendChild(card);
+    });
+
+    // Pre-select saved lang
+    if (saved && LANGS[saved]) pick(saved, false);
+
+    function pick(code, _animate) {
+      selected = code;
+      grid.querySelectorAll(".lang-card").forEach(c => {
+        const active = c.getAttribute("data-code") === code;
+        c.classList.toggle("selected", active);
+        c.setAttribute("aria-selected", String(active));
+      });
+      const btn = document.getElementById("btn-enter");
+      btn.disabled = false;
+      document.getElementById("btn-text").textContent = CTA[code] || CTA.en;
+    }
+
+    document.getElementById("btn-enter").addEventListener("click", () => {
+      if (selected) go(selected);
+    });
+    document.getElementById("btn-skip").addEventListener("click", () => go("en"));
+
+    function go(lang) {
+      localStorage.setItem("fb_lang", lang);
+      // Persist to profile if logged in (fire-and-forget)
+      const token = localStorage.getItem("fb_token");
+      if (token) {
+        fetch("/api/auth/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+          body: JSON.stringify({ preferred_language: lang })
+        }).catch(() => {});
+      }
+      // Loading spinner
+      document.getElementById("btn-text").style.display = "none";
+      document.getElementById("btn-spinner").style.display = "block";
+      document.getElementById("btn-enter").disabled = true;
+
+      // Pre-warm the Homepage translation cache so the next page load is instant.
+      // Exact data-t strings extracted from Homepage.html:
+      const homepageStrings = [
+        // Nav
+        "Shop", "Sell Crops", "Buy Crops", "🌾 Mandi Prices",
+        // Crop dropdown headings
+        "Grains",
+        // Grain items
+        "Bajra", "Basmati Rice", "Jowar", "Maize", "Paddy", "Ragi", "Rice", "Wheat", "Barley", "Millet",
+        // Pulse items
+        "Chana", "Masoor", "Moong", "Tur", "Urad", "Green Peas", "Rajma", "Horse Gram",
+        // Vegetable items
+        "Tomato", "Potato", "Onion", "Cabbage", "Cauliflower", "Carrot", "Brinjal", "Ladys Finger", "Cucumber", "Capsicum",
+        // Fruit items
+        "Apple", "Banana", "Mango", "Grapes", "Orange", "Pomegranate", "Papaya", "Watermelon", "Guava", "Strawberry",
+        // Oilseed items
+        "Groundnut", "Mustard", "Soyabean", "Sunflower Seed", "Sesame", "Castor Seed", "Cotton", "Coconut",
+        // Spice items
+        "Turmeric", "Ginger", "Garlic", "Dry Chilli", "Coriander", "Jeera", "Pepper", "Cardamom", "Jute", "Tea",
+        // Hero
+        "The best market place to buy and sell crops authentically from the farmer.",
+        // Best selling section
+        "Best Selling Product", "Staples", "Fresh Items", "Industrial",
+        // Auth modal
+        "Welcome Back", "User ID / Email", "Password", "Login", "Continue with Google", "Sign Up",
+        "Create Account", "Full Name", "Email", "I am a:", "Select Role", "Buyer", "Farmer/Seller", "Both",
+      ];
+      const warmPromise = (lang !== "en" && window.SiteTranslate)
+        ? SiteTranslate.prewarm(lang, homepageStrings, "/Homepage.html")
+        : Promise.resolve();
+
+      // Animate out, then navigate (prewarm runs in parallel with animation)
+      document.body.classList.add("exiting");
+      warmPromise.finally(() => {
+        setTimeout(() => { window.location.href = "Homepage.html"; }, 440);
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

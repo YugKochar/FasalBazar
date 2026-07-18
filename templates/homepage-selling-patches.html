@@ -1,0 +1,186 @@
+<!--
+  ═══════════════════════════════════════════════════════════════════
+  FASAL BAZAAR — Integration Patches
+  Add "List via Chat" button to selling.html and Homepage.html
+  ═══════════════════════════════════════════════════════════════════
+
+  ── PATCH 1: selling.html ────────────────────────────────────────
+  Find the <h1> or main heading at the top of the selling form page
+  and add this banner ABOVE the form container:
+-->
+
+<!-- ▼ INSERT at the top of the selling form (before the <form> tag) ▼ -->
+<div class="chat-listing-banner">
+  <div class="chat-banner-content">
+    <div class="chat-banner-icon">💬</div>
+    <div class="chat-banner-text">
+      <strong>Prefer a guided step-by-step flow?</strong>
+      <span>Answer simple questions in your language — even with voice!</span>
+    </div>
+    <a href="chat-listing.html" class="chat-banner-btn">
+      List via Chat →
+    </a>
+  </div>
+</div>
+<!-- ▲ END INSERT ▲ -->
+
+<!-- Add this CSS inside the <style> block of selling.html (or in styles.css) -->
+<style>
+.chat-listing-banner {
+  background: linear-gradient(135deg, #e8f5d8 0%, #d4edaf 100%);
+  border: 1.5px solid #7ab340;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.chat-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.chat-banner-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.chat-banner-text {
+  flex: 1;
+  min-width: 180px;
+}
+.chat-banner-text strong {
+  display: block;
+  color: #2d5016;
+  font-size: 14.5px;
+  margin-bottom: 2px;
+}
+.chat-banner-text span {
+  font-size: 12.5px;
+  color: #555550;
+}
+.chat-banner-btn {
+  background: #5a8c2e;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 20px;
+  padding: 9px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background .2s, transform .15s;
+  flex-shrink: 0;
+}
+.chat-banner-btn:hover {
+  background: #2d5016;
+  transform: translateY(-1px);
+}
+</style>
+
+
+<!--
+  ── PATCH 2: Homepage.html ───────────────────────────────────────
+  Find the seller call-to-action section on the homepage
+  (typically a "Start Selling" button or "Are you a farmer?" section)
+  and add the chat listing button alongside it.
+
+  Option A — If you have a single "Start Selling" / "List Your Crop" button:
+  Replace it with a button group:
+-->
+
+<!-- ▼ Replace your existing single sell-CTA button with this group ▼ -->
+<div class="sell-cta-group">
+  <a href="selling.html" class="cta-btn cta-form">
+    📋 List with Form
+  </a>
+  <a href="chat-listing.html" class="cta-btn cta-chat">
+    💬 List via Chat
+    <span class="cta-badge">Easy</span>
+  </a>
+</div>
+<!-- ▲ END INSERT ▲ -->
+
+<!-- CSS for the button group — add inside Homepage.css -->
+<style>
+.sell-cta-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s, transform .15s, box-shadow .2s;
+}
+
+.cta-form {
+  background: #f5f5f0;
+  color: #2d5016;
+  border: 2px solid #5a8c2e;
+}
+.cta-form:hover {
+  background: #e8f5d8;
+  transform: translateY(-2px);
+}
+
+.cta-chat {
+  background: #5a8c2e;
+  color: #fff;
+  border: 2px solid #5a8c2e;
+  position: relative;
+}
+.cta-chat:hover {
+  background: #2d5016;
+  border-color: #2d5016;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(90,140,46,.35);
+}
+
+.cta-badge {
+  background: #ffd54f;
+  color: #3e2000;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: .5px;
+}
+
+@media (max-width: 480px) {
+  .sell-cta-group { flex-direction: column; align-items: stretch; }
+  .cta-btn { justify-content: center; }
+}
+</style>
+
+<!--
+  ─────────────────────────────────────────────────────────────────
+  DB MIGRATION NOTE (run in PostgreSQL):
+
+  -- Expand preferred_language ENUM
+  ALTER TYPE preferred_language RENAME TO preferred_language_old;
+  CREATE TYPE preferred_language AS ENUM (
+    'en','hi','ta','te','kn','ml','bn','gu','mr','pa','or','as','ne','ur','kok','mai'
+  );
+  ALTER TABLE users
+    ALTER COLUMN preferred_language
+    TYPE preferred_language
+    USING preferred_language::text::preferred_language;
+  DROP TYPE preferred_language_old;
+
+  -- Add original_lang + translations cache to listings
+  ALTER TABLE listings
+    ADD COLUMN IF NOT EXISTS original_lang VARCHAR(10) DEFAULT 'en',
+    ADD COLUMN IF NOT EXISTS translations  JSONB        DEFAULT '{}';
+
+  -- Add to requests too
+  ALTER TABLE requests
+    ADD COLUMN IF NOT EXISTS original_lang VARCHAR(10) DEFAULT 'en',
+    ADD COLUMN IF NOT EXISTS translations  JSONB        DEFAULT '{}';
+  ─────────────────────────────────────────────────────────────────
+-->

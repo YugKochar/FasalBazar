@@ -1,0 +1,177 @@
+<!--
+════════════════════════════════════════════════════════════════
+  FASAL BAZAAR — Language Splash + Site-Wide Translation
+  Integration Guide
+════════════════════════════════════════════════════════════════
+
+FILES DELIVERED
+───────────────
+  language-select.html  ← New entry-point (was: Homepage.html)
+  site-translate.js     ← Include on EVERY page
+  reverie.js            ← Already built; unchanged
+
+
+STEP 1 — MAKE language-select.html YOUR ENTRY POINT
+────────────────────────────────────────────────────
+Option A (Redirect from index):
+  In your existing index.html / server root, redirect:
+    <meta http-equiv="refresh" content="0;url=language-select.html">
+
+Option B (Flask route):
+  @app.route("/")
+  def root():
+      return redirect("/language-select.html")
+
+Option C (If Homepage.html is the root):
+  Rename Homepage.html → _Homepage.html (keep as-is)
+  Rename language-select.html → index.html
+  Update the go() function's redirect target to "_Homepage.html"
+
+RETURNING USER LOGIC (already built-in):
+  • If fb_lang is set in localStorage → pre-selects that card + shows
+    the "You last used…" notice. User can change or hit Enter to proceed.
+  • fb_lang is written to localStorage on first pick and updated on every
+    language switch via the floating pill.
+
+
+STEP 2 — ADD site-translate.js TO EVERY PAGE
+─────────────────────────────────────────────
+Add these two script tags to EVERY .html page, just before </body>:
+
+  <script src="api.js"></script>       <!-- already there -->
+  <script src="reverie.js"></script>   <!-- already there on some pages -->
+  <script src="site-translate.js"></script>   ← ADD THIS
+
+Order matters: reverie.js must load before site-translate.js.
+
+
+STEP 3 — MARK TRANSLATABLE ELEMENTS
+─────────────────────────────────────
+site-translate.js looks for elements with the [data-t] attribute.
+Go through each page and add data-t to text you want translated.
+
+  <!-- Before -->
+  <h1>Fresh Produce Near You</h1>
+  <p>Browse listings from farmers in your area.</p>
+  <button>Add to Cart</button>
+
+  <!-- After -->
+  <h1 data-t>Fresh Produce Near You</h1>
+  <p data-t>Browse listings from farmers in your area.</p>
+  <button data-t>Add to Cart</button>
+
+Input placeholders:
+  <input placeholder="Search crops..." data-t-placeholder />
+
+Crop names / brand names (protect from translation):
+  <span data-t-mask>Wheat</span>
+  <span data-t-mask>Basmati</span>
+
+Skip an entire section:
+  <div data-t-skip>
+    <!-- nothing inside will be translated -->
+    <pre>{{ raw data }}</pre>
+  </div>
+
+
+STEP 4 — TRANSLATE DYNAMICALLY INJECTED CONTENT
+─────────────────────────────────────────────────
+When you inject HTML after page load (modals, cards, search results):
+
+  // After injecting new DOM:
+  const modal = document.getElementById("listing-modal");
+  modal.innerHTML = buildListingHTML(data); // your render function
+  await SiteTranslate.translateDynamic(modal);
+
+
+STEP 5 — FLOATING LANGUAGE SWITCHER
+─────────────────────────────────────
+site-translate.js automatically injects a floating 🌐 pill in the
+bottom-right corner of every page. It shows the current language and
+opens a 16-language dropdown on click.
+
+No extra work needed — just include site-translate.js.
+
+To reposition the pill, override in your page CSS:
+  #lang-switcher { bottom: 80px; right: 16px; }  /* e.g. above a FAB */
+
+
+STEP 6 — TRANSLATION CACHING
+──────────────────────────────
+Translations are cached in sessionStorage per page per language:
+  Key format:  fbt_{pagename}_{lang}   e.g.  fbt_Homepage_hi
+
+When the user switches language via the pill:
+  • All session caches are cleared
+  • Current page is re-translated immediately
+
+No backend changes needed for frontend caching.
+
+
+STEP 7 — CONNECT REVERIE CREDENTIALS
+──────────────────────────────────────
+In reverie.js, replace:
+  const API_KEY = "YOUR_REVERIE_API_KEY";
+  const APP_ID  = "YOUR_REVERIE_APP_ID";
+
+With your actual Reverie API credentials.
+
+For production, consider proxying through your Flask backend to avoid
+exposing the key in client JS:
+
+  # routes/translate.py
+  @bp.route("/translate", methods=["POST"])
+  @jwt_required()
+  def translate():
+      data = request.json
+      r = requests.post("https://revapi.reverieinc.com/", json=data,
+          headers={
+              "REV-API-KEY": os.environ["REVERIE_API_KEY"],
+              "REV-APP-ID":  os.environ["REVERIE_APP_ID"],
+              "REV-APPNAME": "localization",
+              "REV-APPVERSION": "3.0",
+              "src_lang": data.get("src_lang", "en"),
+              "tgt_lang": data.get("tgt_lang", "en"),
+              "domain": "ecommerce",
+          })
+      return jsonify(r.json())
+
+Then update reverie.js BASE_URL to "/api/translate" for translate().
+
+
+DATABASE MIGRATION (already in previous patch, repeated for reference)
+──────────────────────────────────────────────────────────────────────
+-- Expand preferred_language ENUM to all 16 Reverie languages
+ALTER TYPE preferred_language RENAME TO preferred_language_old;
+CREATE TYPE preferred_language AS ENUM (
+  'en','hi','ta','te','kn','ml','bn','gu','mr','pa','or','as','ne','ur','kok','mai'
+);
+ALTER TABLE users
+  ALTER COLUMN preferred_language
+  TYPE preferred_language
+  USING preferred_language::text::preferred_language;
+DROP TYPE preferred_language_old;
+
+
+USER FLOW SUMMARY
+─────────────────
+First visit:
+  language-select.html → pick language → fb_lang saved → Homepage.html loads
+  → site-translate.js translates all [data-t] elements via Reverie API
+  → floating 🌐 pill visible on all pages
+
+Returning visit:
+  language-select.html → pre-selected language shown → one tap to enter
+  → Homepage already translated (sessionStorage cache hit = instant)
+
+Language switch (any page):
+  Click 🌐 pill → pick new language → page re-translates in place
+  → fb_lang updated → all subsequent page navigations use new lang
+
+Login/Signup:
+  After login, preferred_language from profile overwrites fb_lang in
+  localStorage automatically (handled in Homepage.js auth flow — add
+  this line after Auth.setUser(user)):
+    localStorage.setItem("fb_lang", user.preferred_language || "en");
+════════════════════════════════════════════════════════════════
+-->

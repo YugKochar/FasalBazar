@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      // Redirect to language selector if this is their first visit
+      if (!localStorage.getItem("fb_lang")) {
+        window.location.replace("language-select.html");
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fasal Bazaar - Home</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <a
+            href="Homepage.html"
+            class="logo"
+            style="text-decoration: none; color: inherit"
+            >Fasal Bazaar</a
+          >
+          <div class="search-bar" style="position: relative">
+            <input
+              type="text"
+              placeholder="Search Crops, Fruits and more"
+              id="searchInput"
+              style="padding-right: 90px"
+            />
+            <button
+              onclick="performSearch()"
+              style="
+                position: absolute;
+                right: 5px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #1a5490;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+              "
+            >
+              Search
+            </button>
+          </div>
+          <div class="header-right">
+            <span
+              class="pincode-section"
+              onclick="openPincodeModal()"
+              title="Set your location"
+            >
+              <i class="fas fa-map-marker-alt"></i>
+              <span id="locationDisplay">Enter Pincode</span>
+            </span>
+            <div id="userSection">
+              <a
+                href="#"
+                class="user-link"
+                id="authButton"
+                onclick="openAuthModal()"
+                >&#128100; Sign Up/Sign In</a
+              >
+            </div>
+            <button
+              class="cart-icon-btn"
+              onclick="openCartSidebar()"
+              title="View Cart"
+            >
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count" id="cartCount">0</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="main-nav">
+      <div class="container nav-container">
+        <div class="nav-dropdown">
+          <button
+            class="nav-btn dropdown-toggle"
+            onclick="filterByCategory('Grains', event)"
+          >
+            Grains <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#" onclick="searchCrop('Bajra')">Bajra</a>
+            <a href="#" onclick="searchCrop('Basmati Rice')">Basmati Rice</a>
+            <a href="#" onclick="searchCrop('Jowar')">Jowar</a>
+            <a href="#" onclick="searchCrop('Maize')">Maize</a>
+            <a href="#" onclick="searchCrop('Paddy')">Paddy</a>
+            <a href="#" onclick="searchCrop('Ragi')">Ragi</a>
+            <a href="#" onclick="searchCrop('Rice')">Rice</a>
+            <a href="#" onclick="searchCrop('Wheat')">Wheat</a>
+            <a href="#" onclick="searchCrop('Barley')">Barley</a>
+            <a href="#" onclick="searchCrop('Millet')">Millet</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button
+            class="nav-btn dropdown-toggle"
+            onclick="filterByCategory('Pulses', event)"
+          >
+            Pulses <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#" onclick="searchCrop('Chana')">Chana</a>
+            <a href="#" onclick="searchCrop('Masoor')">Masoor</a>
+            <a href="#" onclick="searchCrop('Moong')">Moong</a>
+            <a href="#" onclick="searchCrop('Tur')">Tur</a>
+            <a href="#" onclick="searchCrop('Urad')">Urad</a>
+            <a href="#" onclick="searchCrop('Green Peas')">Green Peas</a>
+            <a href="#" onclick="searchCrop('Rajma')">Rajma</a>
+            <a href="#" onclick="searchCrop('Horse Gram')">Horse Gram</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button
+            class="nav-btn dropdown-toggle"
+            onclick="filterByCategory('Vegetables', event)"
+          >
+            Vegetables <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#" onclick="searchCrop('Tomato')">Tomato</a>
+            <a href="#" onclick="searchCrop('Potato')">Potato</a>
+            <a href="#" onclick="searchCrop('Onion')">Onion</a>
+            <a href="#" onclick="searchCrop('Cabbage')">Cabbage</a>
+            <a href="#" onclick="searchCrop('Cauliflower')">Cauliflower</a>
+            <a href="#" onclick="searchCrop('Carrot')">Carrot</a>
+            <a href="#" onclick="searchCrop('Brinjal')">Brinjal</a>
+            <a href="#" onclick="searchCrop('Ladys Finger')">Ladys Finger</a>
+            <a href="#" onclick="searchCrop('Cucumber')">Cucumber</a>
+            <a href="#" onclick="searchCrop('Capsicum')">Capsicum</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button
+            class="nav-btn dropdown-toggle"
+            onclick="filterByCategory('Fruits', event)"
+          >
+            Fruits <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#" onclick="searchCrop('Apple')">Apple</a>
+            <a href="#" onclick="searchCrop('Banana')">Banana</a>
+            <a href="#" onclick="searchCrop('Mango')">Mango</a>
+            <a href="#" onclick="searchCrop('Grapes')">Grapes</a>
+            <a href="#" onclick="searchCrop('Orange')">Orange</a>
+            <a href="#" onclick="searchCrop('Pomegranate')">Pomegranate</a>
+            <a href="#" onclick="searchCrop('Papaya')">Papaya</a>
+            <a href="#" onclick="searchCrop('Watermelon')">Watermelon</a>
+            <a href="#" onclick="searchCrop('Guava')">Guava</a>
+            <a href="#" onclick="searchCrop('Strawberry')">Strawberry</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button
+            class="nav-btn dropdown-toggle"
+            onclick="filterByCategory('Oilseeds', event)"
+          >
+            Oilseeds <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#" onclick="searchCrop('Groundnut')">Groundnut</a>
+            <a href="#" onclick="searchCrop('Mustard')">Mustard</a>
+            <a href="#" onclick="searchCrop('Soyabean')">Soyabean</a>
+            <a href="#" onclick="searchCrop('Sunflower Seed')">Sunflower Seed</a>
+            <a href="#" onclick="searchCrop('Sesame')">Sesame</a>
+            <a href="#" onclick="searchCrop('Castor Seed')">Castor Seed</a>
+            <a href="#" onclick="searchCrop('Cotton')">Cotton</a>
+            <a href="#" onclick="searchCrop('Coconut')">Coconut</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button
+            class="nav-btn dropdown-toggle"
+            onclick="filterByCategory('Spices', event)"
+          >
+            Spices &amp; Fibers <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#" onclick="searchCrop('Turmeric')">Turmeric</a>
+            <a href="#" onclick="searchCrop('Ginger')">Ginger</a>
+            <a href="#" onclick="searchCrop('Garlic')">Garlic</a>
+            <a href="#" onclick="searchCrop('Dry Chilli')">Dry Chilli</a>
+            <a href="#" onclick="searchCrop('Coriander')">Coriander</a>
+            <a href="#" onclick="searchCrop('Jeera')">Jeera</a>
+            <a href="#" onclick="searchCrop('Pepper')">Pepper</a>
+            <a href="#" onclick="searchCrop('Cardamom')">Cardamom</a>
+            <a href="#" onclick="searchCrop('Jute')">Jute</a>
+            <a href="#" onclick="searchCrop('Tea')">Tea</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button class="nav-btn" onclick="window.location.href = 'mandi.html'">
+            🌾 Mandi Prices
+          </button>
+        </div>
+        <div class="nav-dropdown">
+          <button class="nav-btn nav-btn-sell" onclick="window.location.href='chat-listing.html'">
+            🌾 Sell Crops
+          </button>
+        </div>
+        <div class="nav-dropdown">
+          <button class="nav-btn nav-btn-buy" onclick="window.location.href='chat-listing.html?mode=buyer'">
+            🛒 Buy / Request
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container main-content">
+      <div class="listing-tabs">
+        <button
+          class="listing-tab active"
+          onclick="switchListingType('seller')"
+        >
+          <i class="fas fa-tractor"></i> Seller Listings
+        </button>
+        <button class="listing-tab" onclick="switchListingType('buyer')">
+          <i class="fas fa-shopping-cart"></i> Buyer Requests
+        </button>
+      </div>
+
+      <section class="commodity-section">
+        <div class="section-header">
+          <h2 id="commodityTitle">Commodity</h2>
+        </div>
+        <div class="commodity-table">
+          <table id="commodityTable">
+            <thead id="commodityTableHead">
+              <tr>
+                <th>Crop</th>
+                <th>City</th>
+                <th>Amount</th>
+                <th>Price</th>
+                <th>Seller</th>
+              </tr>
+            </thead>
+            <tbody id="commodityBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="deals-section">
+        <div class="section-header">
+          <h2 id="dealsTitle">
+            Grab the best deal on <span class="highlight">Crops</span>
+          </h2>
+          <div style="display: flex; align-items: center; gap: 15px">
+            <span
+              id="activeCategoryBadge"
+              style="
+                display: none;
+                background: #1a5490;
+                color: white;
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+              "
+            >
+              <span id="activeCategoryLabel"></span>
+              <button
+                onclick="clearCategoryFilter()"
+                style="
+                  background: none;
+                  border: none;
+                  color: white;
+                  cursor: pointer;
+                  margin-left: 6px;
+                  font-size: 14px;
+                "
+              >
+                &times;
+              </button>
+            </span>
+            <a
+              href="#"
+              class="view-all"
+              onclick="clearFilters(); return false;"
+              >View All &rsaquo;</a
+            >
+          </div>
+        </div>
+        <div class="products-grid" id="productsGrid"></div>
+      </section>
+
+      <section class="cities-section">
+        <div class="section-header">
+          <h2>Shop From Popular <span class="highlight">Cities</span></h2>
+          <a href="#" class="view-all">View All &rsaquo;</a>
+        </div>
+        <div class="cities-carousel-container">
+          <button class="scroll-btn left" onclick="scrollCities('left')">
+            &lt;
+          </button>
+          <div class="cities-scroll" id="citiesScroll">
+            <div class="city-btn" onclick="filterByCity('Mumbai')">Mumbai</div>
+            <div class="city-btn" onclick="filterByCity('Delhi')">Delhi</div>
+            <div class="city-btn" onclick="filterByCity('Bengaluru')">Bengaluru</div>
+            <div class="city-btn" onclick="filterByCity('Hyderabad')">Hyderabad</div>
+            <div class="city-btn" onclick="filterByCity('Ahmedabad')">Ahmedabad</div>
+            <div class="city-btn" onclick="filterByCity('Chennai')">Chennai</div>
+            <div class="city-btn" onclick="filterByCity('Kolkata')">Kolkata</div>
+            <div class="city-btn" onclick="filterByCity('Pune')">Pune</div>
+            <div class="city-btn" onclick="filterByCity('Jaipur')">Jaipur</div>
+            <div class="city-btn" onclick="filterByCity('Surat')">Surat</div>
+            <div class="city-btn" onclick="filterByCity('Lucknow')">Lucknow</div>
+            <div class="city-btn" onclick="filterByCity('Kanpur')">Kanpur</div>
+            <div class="city-btn" onclick="filterByCity('Nagpur')">Nagpur</div>
+            <div class="city-btn" onclick="filterByCity('Indore')">Indore</div>
+            <div class="city-btn" onclick="filterByCity('Bhopal')">Bhopal</div>
+            <div class="city-btn" onclick="filterByCity('Patna')">Patna</div>
+          </div>
+          <button class="scroll-btn right" onclick="scrollCities('right')">
+            &gt;
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div
+      id="cartOverlay"
+      class="cart-overlay"
+      onclick="closeCartSidebar()"
+    ></div>
+    <div id="cartSidebar" class="cart-sidebar">
+      <div class="cart-sidebar-header">
+        <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
+        <button class="cart-close-btn" onclick="closeCartSidebar()">
+          &times;
+        </button>
+      </div>
+      <div class="cart-sidebar-body" id="cartSidebarItems">
+        <div class="cart-empty">
+          <i
+            class="fas fa-shopping-basket"
+            style="font-size: 48px; color: #ddd; margin-bottom: 15px"
+          ></i>
+          <p>Your cart is empty</p>
+        </div>
+      </div>
+      <div
+        class="cart-sidebar-footer"
+        id="cartSidebarFooter"
+        style="display: none"
+      >
+        <div class="cart-total-row">
+          <span>Total</span>
+          <span id="cartSidebarTotal">&#8377;0</span>
+        </div>
+        <a href="checkout.html" class="cart-checkout-btn"
+          >Proceed to Checkout</a
+        >
+      </div>
+    </div>
+
+    <div id="authModal" class="modal">
+      <div class="modal-content auth-modal-content">
+        <span class="close" onclick="closeAuthModal()">&times;</span>
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchAuthTab('login')">
+            Login
+          </button>
+          <button class="auth-tab" onclick="switchAuthTab('signup')">
+            Sign Up
+          </button>
+        </div>
+        <div id="loginForm" class="auth-form active">
+          <h2>Welcome Back</h2>
+          <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label>User ID / Email</label>
+              <input
+                type="text"
+                id="loginUserId"
+                required
+                placeholder="Enter your user ID or email"
+              />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                id="loginPassword"
+                required
+                placeholder="Enter your password"
+              />
+            </div>
+            <button type="submit" class="auth-submit-btn">Login</button>
+          </form>
+          <div class="auth-divider"><span>OR</span></div>
+          <button class="google-login-btn" onclick="handleGoogleLogin()">
+            <i class="fab fa-google"></i> Continue with Google
+          </button>
+          <p class="auth-switch">
+            Don't have an account?
+            <a href="#" onclick="switchAuthTab('signup')">Sign Up</a>
+          </p>
+        </div>
+        <div id="signupForm" class="auth-form">
+          <h2>Create Account</h2>
+          <!-- BUG FIX B5: Removed signupUserId field — backend auth.py does not use it -->
+          <form onsubmit="handleSignup(event)">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input
+                type="text"
+                id="signupName"
+                required
+                placeholder="Enter your full name"
+              />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                id="signupEmail"
+                required
+                placeholder="Enter your email"
+              />
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input
+                type="tel"
+                id="signupPhone"
+                required
+                placeholder="Enter your phone number"
+              />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                id="signupPassword"
+                required
+                placeholder="Create a password"
+              />
+            </div>
+            <div class="form-group">
+              <label>I am a:</label>
+              <select id="signupRole" required>
+                <option value="">Select Role</option>
+                <option value="buyer">Buyer</option>
+                <option value="seller">Farmer/Seller</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+            <button type="submit" class="auth-submit-btn">Sign Up</button>
+          </form>
+          <div class="auth-divider"><span>OR</span></div>
+          <button class="google-login-btn" onclick="handleGoogleLogin()">
+            <i class="fab fa-google"></i> Sign up with Google
+          </button>
+          <p class="auth-switch">
+            Already have an account?
+            <a href="#" onclick="switchAuthTab('login')">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="pincodeModal" class="modal">
+      <div class="modal-content pincode-modal-content">
+        <span class="close" onclick="closePincodeModal()">&times;</span>
+        <h2>Enter Your Pincode</h2>
+        <div class="form-group">
+          <input
+            type="text"
+            id="pincodeInput"
+            placeholder="Enter 6-digit pincode"
+            maxlength="6"
+            pattern="[0-9]{6}"
+          />
+          <button
+            onclick="fetchLocation()"
+            class="auth-submit-btn"
+            style="margin-top: 15px"
+          >
+            Get Location
+          </button>
+        </div>
+        <div id="locationResult" style="margin-top: 20px; color: #333"></div>
+      </div>
+    </div>
+
+    <footer>
+      <div
+        class="container footer-content"
+        style="
+          grid-template-columns: 1fr;
+          justify-items: center;
+          text-align: center;
+        "
+      >
+        <div class="footer-section">
+          <h3>Most Popular Categories</h3>
+          <ul class="footer-categories">
+            <li onclick="filterByCategory('Grains', event)">Grains</li>
+            <li onclick="filterByCategory('Pulses', event)">Pulses</li>
+            <li onclick="filterByCategory('Vegetables', event)">Vegetables</li>
+            <li onclick="filterByCategory('Fruits', event)">Fruits</li>
+            <li onclick="filterByCategory('Oilseeds', event)">Oilseeds</li>
+            <li onclick="filterByCategory('Spices', event)">Spices &amp; Fibers</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="container">
+          <p>&copy; 2025 All rights reserved. Fasal Bazaar Ltd.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- BUG FIX B1: api.js was loaded TWICE (once here, once implicitly via old duplicate tag).
+         Now loaded exactly once, in the correct order: api.js → script.js → reverie.js → site-translate.js -->
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="reverie.js"></script>
+    <script src="site-translate.js"></script>
+  </body>
+</html>

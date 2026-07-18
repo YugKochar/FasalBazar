@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fasal Bazaar – Shortlist & Contact</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:      #1e6b3c;
+      --green-dark: #144d2a;
+      --green-light:#e8f5ee;
+      --blue:       #1a5490;
+      --blue-light: #e8f0fb;
+      --red:        #e53935;
+      --gray:       #6b7280;
+      --border:     #e5e7eb;
+      --bg:         #f9fafb;
+      --white:      #ffffff;
+      --text:       #111827;
+    }
+
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 0; position: sticky; top: 0; z-index: 100; }
+    .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-size: 22px; font-weight: 800; color: var(--green); text-decoration: none; }
+    .back-btn { display: flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; cursor: pointer; font-size: 14px; color: var(--gray); transition: all .2s; }
+    .back-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── Page layout ── */
+    .page { max-width: 1100px; margin: 32px auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 380px; gap: 28px; align-items: start; }
+    @media (max-width: 800px) { .page { grid-template-columns: 1fr; } }
+
+    /* ── Section card ── */
+    .card { background: var(--white); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+    .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-header h2 { font-size: 18px; font-weight: 700; }
+    .card-body { padding: 20px 24px; }
+
+    /* ── Shortlist items ── */
+    .item { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+    .item:last-child { border-bottom: none; }
+    .item-img { width: 72px; height: 72px; border-radius: 10px; object-fit: cover; background: var(--bg); flex-shrink: 0; }
+    .item-img-placeholder { width: 72px; height: 72px; border-radius: 10px; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+    .item-info { flex: 1; }
+    .item-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .item-meta { font-size: 13px; color: var(--gray); margin-bottom: 6px; }
+    .item-price { font-size: 15px; font-weight: 700; color: var(--green); }
+    .item-seller { font-size: 12px; color: var(--gray); margin-top: 4px; }
+    .item-qty { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .qty-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .qty-btn:hover { background: var(--green-light); }
+    .qty-val { font-size: 15px; font-weight: 600; min-width: 24px; text-align: center; }
+    .remove-btn { margin-left: auto; background: none; border: none; color: #ccc; cursor: pointer; font-size: 16px; padding: 4px; transition: color .2s; }
+    .remove-btn:hover { color: var(--red); }
+
+    /* ── Contact card ── */
+    .contact-card { background: var(--white); border-radius: 14px; border: 1px solid var(--border); padding: 24px; margin-top: 20px; }
+    .contact-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .contact-card h3 i { color: var(--green); }
+    .contact-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .contact-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .contact-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .contact-label { font-size: 12px; color: var(--gray); }
+    .contact-value { font-size: 14px; font-weight: 600; color: var(--text); }
+    .contact-btn-link { margin-left: auto; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all .2s; }
+    .btn-call { background: var(--green-light); color: var(--green); }
+    .btn-call:hover { background: var(--green); color: white; }
+    .btn-whatsapp { background: #e8f8ef; color: #25D366; }
+    .btn-whatsapp:hover { background: #25D366; color: white; }
+
+    /* ── Seller loading state ── */
+    .seller-loading { text-align: center; padding: 30px; color: var(--gray); font-size: 14px; }
+    .seller-locked { text-align: center; padding: 24px; }
+    .seller-locked i { font-size: 32px; color: #d1d5db; margin-bottom: 10px; display: block; }
+    .seller-locked p { font-size: 14px; color: var(--gray); margin-bottom: 14px; }
+    .login-to-view { background: var(--green); color: white; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s; }
+    .login-to-view:hover { background: var(--green-dark); }
+
+    /* ── Summary sidebar ── */
+    .summary { background: var(--white); border-radius: 14px; border: 1px solid var(--border); padding: 24px; position: sticky; top: 90px; }
+    .summary h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .summary-row { display: flex; justify-content: space-between; font-size: 14px; padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--gray); }
+    .summary-row:last-of-type { border-bottom: none; }
+    .summary-row.total { font-size: 17px; font-weight: 700; color: var(--text); border-top: 2px solid var(--border); margin-top: 8px; padding-top: 14px; }
+    .summary-note { font-size: 12px; color: var(--gray); background: var(--bg); border-radius: 8px; padding: 12px; margin-top: 16px; line-height: 1.5; }
+    .summary-note i { color: var(--green); margin-right: 5px; }
+    .clear-btn { width: 100%; margin-top: 16px; padding: 11px; border-radius: 8px; border: 1px solid var(--border); background: white; color: var(--red); font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .clear-btn:hover { background: #fff5f5; border-color: var(--red); }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 60px 24px; }
+    .empty i { font-size: 52px; color: #d1d5db; margin-bottom: 16px; display: block; }
+    .empty h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .empty p { color: var(--gray); margin-bottom: 24px; }
+    .go-shop { display: inline-block; background: var(--green); color: white; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; transition: background .2s; }
+    .go-shop:hover { background: var(--green-dark); }
+
+    /* ── Badge ── */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge-green { background: var(--green-light); color: var(--green); }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">🌾 Fasal Bazaar</a>
+    <button class="back-btn" onclick="history.back()">
+      <i class="fas fa-arrow-left"></i> Back to Listings
+    </button>
+  </div>
+</header>
+
+<div class="page" id="pageContent">
+  <!-- filled by JS -->
+</div>
+
+<script src="api.js"></script>
+<script>
+// ── State ────────────────────────────────────────────────────
+let cart = JSON.parse(localStorage.getItem('fb_cart') || '[]');
+// sellerCache: listing_id → seller details
+const sellerCache = {};
+
+// ── Save & re-render ─────────────────────────────────────────
+function saveCart() {
+  localStorage.setItem('fb_cart', JSON.stringify(cart));
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  saveCart();
+  renderPage();
+}
+
+function changeQty(index, delta) {
+  cart[index].quantity = Math.max(1, (cart[index].quantity || 1) + delta);
+  saveCart();
+  renderPage();
+}
+
+function clearCart() {
+  if (!confirm('Remove all items from your shortlist?')) return;
+  cart = [];
+  saveCart();
+  renderPage();
+}
+
+// ── Fetch seller contact details ─────────────────────────────
+async function fetchSeller(listingId) {
+  if (sellerCache[listingId]) return sellerCache[listingId];
+  try {
+    const data = await apiFetch(`/listings/${listingId}`, { auth: true });
+    const seller = {
+      name:  data.seller_name  || 'Farmer',
+      phone: data.seller_phone || null,
+      email: data.seller_email || null,
+      city:  data.city         || '',
+      state: data.state        || '',
+    };
+    sellerCache[listingId] = seller;
+    return seller;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ── Render seller contact block ──────────────────────────────
+async function loadSellerContact(listingId, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!Auth.isLoggedIn()) {
+    container.innerHTML = `
+      <div class="seller-locked">
+        <i class="fas fa-lock"></i>
+        <p>Login to view seller contact details</p>
+        <button class="login-to-view" onclick="window.location.href='Homepage.html'">Login / Sign Up</button>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="seller-loading"><span class="spinner"></span> Loading seller details...</div>`;
+  const seller = await fetchSeller(listingId);
+
+  if (!seller) {
+    container.innerHTML = `<div class="seller-loading" style="color:#e53935;">Could not load seller details.</div>`;
+    return;
+  }
+
+  const phoneHref = seller.phone ? `tel:${seller.phone}` : null;
+  const waHref    = seller.phone ? `https://wa.me/91${seller.phone.replace(/\D/g,'')}` : null;
+
+  container.innerHTML = `
+    <div class="contact-card">
+      <h3><i class="fas fa-user-circle"></i> Seller Contact</h3>
+      <div class="contact-row">
+        <div class="contact-icon" style="background:#e8f5ee;color:#1e6b3c;"><i class="fas fa-user"></i></div>
+        <div>
+          <div class="contact-label">Name</div>
+          <div class="contact-value">${seller.name}</div>
+        </div>
+      </div>
+      ${seller.city ? `
+      <div class="contact-row">
+        <div class="contact-icon" style="background:#fef3e2;color:#f59e0b;"><i class="fas fa-map-marker-alt"></i></div>
+        <div>
+          <div class="contact-label">Location</div>
+          <div class="contact-value">${seller.city}${seller.state ? ', ' + seller.state : ''}</div>
+        </div>
+      </div>` : ''}
+      ${seller.phone ? `
+      <div class="contact-row">
+        <div class="contact-icon" style="background:#e8f0fb;color:#1a5490;"><i class="fas fa-phone"></i></div>
+        <div>
+          <div class="contact-label">Phone</div>
+          <div class="contact-value">${seller.phone}</div>
+        </div>
+        <a href="${phoneHref}" class="contact-btn-link btn-call"><i class="fas fa-phone"></i> Call</a>
+      </div>
+      <div class="contact-row">
+        <div class="contact-icon" style="background:#e8f8ef;color:#25D366;"><i class="fab fa-whatsapp"></i></div>
+        <div>
+          <div class="contact-label">WhatsApp</div>
+          <div class="contact-value">${seller.phone}</div>
+        </div>
+        <a href="${waHref}" target="_blank" class="contact-btn-link btn-whatsapp"><i class="fab fa-whatsapp"></i> Chat</a>
+      </div>` : `
+      <div class="contact-row">
+        <div class="contact-icon" style="background:#f3f4f6;color:#9ca3af;"><i class="fas fa-phone-slash"></i></div>
+        <div>
+          <div class="contact-label">Phone</div>
+          <div class="contact-value" style="color:#9ca3af;">Not provided</div>
+        </div>
+      </div>`}
+      ${seller.email ? `
+      <div class="contact-row">
+        <div class="contact-icon" style="background:#fce7f3;color:#db2777;"><i class="fas fa-envelope"></i></div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value">${seller.email}</div>
+        </div>
+        <a href="mailto:${seller.email}" class="contact-btn-link" style="background:#fce7f3;color:#db2777;">
+          <i class="fas fa-envelope"></i> Email
+        </a>
+      </div>` : ''}
+    </div>`;
+}
+
+// ── Main render ──────────────────────────────────────────────
+function renderPage() {
+  const page = document.getElementById('pageContent');
+
+  if (cart.length === 0) {
+    page.innerHTML = `
+      <div style="grid-column:1/-1;">
+        <div class="card">
+          <div class="empty">
+            <i class="fas fa-shopping-basket"></i>
+            <h3>Your shortlist is empty</h3>
+            <p>Browse listings and add crops you're interested in.</p>
+            <a href="index.html" class="go-shop">Browse Listings</a>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Build items HTML
+  let itemsHtml = '';
+  let total = 0;
+  let summaryRows = '';
+
+  cart.forEach((item, i) => {
+    const qty   = item.quantity || 1;
+    const price = item.price || 0;
+    const sub   = price * qty;
+    total += sub;
+
+    const imgHtml = item.image
+      ? `<img class="item-img" src="${item.image}" alt="${item.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <div class="item-img-placeholder" style="display:none;">🌾</div>`
+      : `<div class="item-img-placeholder">🌾</div>`;
+
+    itemsHtml += `
+      <div class="item">
+        ${imgHtml}
+        <div class="item-info">
+          <div class="item-name">${item.name}</div>
+          <div class="item-meta">${item.seller_name || 'Farmer'} &nbsp;•&nbsp; ${item.unit || 'kg'}</div>
+          <div class="item-price">₹${price}/${item.unit || 'kg'}</div>
+          <div class="item-qty">
+            <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+            <span class="qty-val">${qty}</span>
+            <button class="qty-btn" onclick="changeQty(${i}, +1)">+</button>
+            <span style="font-size:13px;color:#6b7280;margin-left:4px;">= ₹${sub}</span>
+          </div>
+        </div>
+        <button class="remove-btn" onclick="removeItem(${i})" title="Remove"><i class="fas fa-times"></i></button>
+      </div>
+      <!-- Seller contact for this item -->
+      <div id="seller-${i}"></div>
+    `;
+
+    summaryRows += `<div class="summary-row"><span>${item.name} ×${qty}</span><span>₹${sub}</span></div>`;
+  });
+
+  page.innerHTML = `
+    <!-- Left: items + contacts -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-list" style="color:var(--green);margin-right:8px;"></i>Your Shortlist</h2>
+          <span class="badge badge-green">${cart.length} item${cart.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="card-body">
+          ${itemsHtml}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: summary -->
+    <div>
+      <div class="summary">
+        <h2>Order Summary</h2>
+        ${summaryRows}
+        <div class="summary-row total"><span>Estimated Total</span><span>₹${total}</span></div>
+        <div class="summary-note">
+          <i class="fas fa-info-circle"></i>
+          Prices are indicative. Final price is negotiated directly with the seller.
+          Contact details are shown below each item.
+        </div>
+        <button class="clear-btn" onclick="clearCart()">
+          <i class="fas fa-trash"></i> Clear Shortlist
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Load seller contacts asynchronously for each item
+  cart.forEach((item, i) => {
+    if (item.listing_id) {
+      loadSellerContact(item.listing_id, `seller-${i}`);
+    }
+  });
+}
+
+// ── Init ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderPage();
+});
+</script>
+</body>
+</html>

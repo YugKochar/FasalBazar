@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inquiry Shortlist - Fasal Bazaar</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .shortlist-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .shortlist-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 15px;
+      }
+      .table-responsive {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+      }
+      th {
+        text-align: left;
+        padding: 15px;
+        background: #f9fafb;
+        color: #6b7280;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+      }
+      .crop-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .crop-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        object-fit: cover;
+        background: #eee;
+      }
+      .seller-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 50px;
+        color: #999;
+      }
+      .print-btn {
+        background: #1a5490;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .clear-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content" style="justify-content: space-between">
+          <a
+            href="index.html"
+            class="logo"
+            style="text-decoration: none; color: inherit"
+            >Fasal Bazaar</a
+          >
+          <nav
+            class="main-nav"
+            style="background: transparent; padding: 0; box-shadow: none"
+          >
+            <div class="nav-container" style="gap: 50px">
+              <a
+                href="index.html"
+                style="color: #333; text-decoration: none; font-weight: 600"
+                >Home</a
+              >
+              <a
+                href="buying.html"
+                style="color: #333; text-decoration: none; font-weight: 600"
+                >Buy Crops</a
+              >
+              <a
+                href="selling.html"
+                style="color: #333; text-decoration: none; font-weight: 600"
+                >Sell Crops</a
+              >
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="shortlist-container">
+        <div class="shortlist-header">
+          <h2><i class="fas fa-list-alt"></i> Your Inquiry Shortlist</h2>
+          <div>
+            <button class="print-btn" onclick="window.print()">
+              <i class="fas fa-print"></i> Print List
+            </button>
+            <button class="clear-btn" onclick="clearAll()">
+              <i class="fas fa-trash"></i> Clear All
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table id="shortlistTable">
+            <thead>
+              <tr>
+                <th>Crop Details</th>
+                <th>Quantity</th>
+                <th>Est. Cost</th>
+                <th>Seller / Buyer</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="shortlistBody"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none">
+          <i
+            class="fas fa-shopping-basket"
+            style="font-size: 48px; margin-bottom: 15px"
+          ></i>
+          <p>Your shortlist is empty. Add crops to see seller details here.</p>
+          <a
+            href="index.html"
+            style="
+              color: #1a5490;
+              font-weight: 600;
+              text-decoration: none;
+              margin-top: 10px;
+              display: inline-block;
+            "
+            >Browse Crops</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-bottom">
+        <div class="container"><p>&copy; 2025 Fasal Bazaar Ltd.</p></div>
+      </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Fixed: use fb_cart (consistent with the rest of the app)
+        const cart = JSON.parse(localStorage.getItem("fb_cart") || "[]");
+        const tbody = document.getElementById("shortlistBody");
+        const empty = document.getElementById("emptyState");
+        const table = document.getElementById("shortlistTable");
+
+        if (cart.length === 0) {
+          table.style.display = "none";
+          empty.style.display = "block";
+          return;
+        }
+
+        tbody.innerHTML = cart
+          .map((item, index) => {
+            const estCost = item.price
+              ? `₹${item.price * (item.quantity || 1)}`
+              : "—";
+            const imgHtml = item.image
+              ? `<img src="${item.image}" class="crop-img" alt="${item.name}">`
+              : `<div class="crop-img" style="display:flex;align-items:center;justify-content:center;background:#e0f2fe;color:#0284c7;font-size:20px;font-weight:bold;">${item.name[0]}</div>`;
+
+            return `
+            <tr>
+              <td>
+                <div class="crop-info">
+                  ${imgHtml}
+                  <div>
+                    <div style="font-weight:700;color:#333;">${item.name}</div>
+                    <div style="font-size:13px;color:#666;">${item.unit || "kg"} · qty: ${item.quantity || 1}</div>
+                  </div>
+                </div>
+              </td>
+              <td>${item.quantity || 1} ${item.unit || "kg"}</td>
+              <td style="font-weight:600;color:#1a5490;">${estCost}</td>
+              <td>
+                <div style="margin-bottom:4px;font-weight:600;">${item.seller_name || "Farmer"}</div>
+                <span class="seller-badge">Verified</span>
+              </td>
+              <td>
+                <button onclick="removeItem(${index})" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer;">
+                  <i class="fas fa-trash"></i> Remove
+                </button>
+              </td>
+            </tr>`;
+          })
+          .join("");
+      });
+
+      function removeItem(index) {
+        const cart = JSON.parse(localStorage.getItem("fb_cart") || "[]");
+        cart.splice(index, 1);
+        localStorage.setItem("fb_cart", JSON.stringify(cart));
+        location.reload();
+      }
+
+      function clearAll() {
+        if (confirm("Clear your entire shortlist?")) {
+          localStorage.removeItem("fb_cart");
+          location.reload();
+        }
+      }
+    </script>
+    <script src="api.js"></script>
+    <script src="reverie.js"></script>
+    <script src="site-translate.js"></script>
+  </body>
+</html>
